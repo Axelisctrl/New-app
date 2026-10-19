@@ -3,25 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClearReply AI — Smart Email Responses</title>
-  <meta name="description" content="ClearReply AI helps organizations respond to incoming emails with one click: agree, disagree, or request more information.">
+
+  <title>ClearReply AI | One-Click Email Responses</title>
+
+  <meta name="description"
+    content="Help organizations respond to routine emails with one-click options.">
 
   <style>
     :root {
-      --bg: #f5f7fb;
-      --panel: #ffffff;
-      --text: #192338;
-      --muted: #778196;
-      --border: #e7eaf1;
-      --blue: #4768f5;
-      --blue-light: #edf1ff;
-      --green: #16875d;
-      --green-light: #e9f8f0;
-      --red: #c94949;
-      --red-light: #fff0f0;
-      --orange: #a86a10;
-      --orange-light: #fff5e5;
-      --shadow: 0 8px 28px rgba(30, 42, 75, 0.06);
+      --blue: #4968f5;
+      --dark: #172033;
+      --muted: #69758a;
+      --border: #e3e8f0;
+      --bg: #f6f8fc;
+      --green: #16865b;
+      --red: #c54848;
+      --orange: #a96b13;
     }
 
     * {
@@ -30,666 +27,313 @@
 
     body {
       margin: 0;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    button, input, textarea {
-      font: inherit;
+      font-family: Inter, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Arial, sans-serif;
+      color: var(--dark);
+      background: white;
+      line-height: 1.6;
     }
 
     button {
+      font: inherit;
       cursor: pointer;
     }
 
-    .app {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    .topbar {
-      height: 72px;
+    .container {
+      width: min(1120px, 90%);
+      margin: 0 auto;
+    }
+
+    nav {
+      height: 76px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 28px;
-      background: var(--panel);
       border-bottom: 1px solid var(--border);
-      gap: 18px;
     }
 
     .brand {
       display: flex;
-      gap: 11px;
       align-items: center;
-      min-width: 220px;
+      gap: 11px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.7px;
     }
 
     .brand-icon {
       width: 39px;
       height: 39px;
-      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: var(--blue);
       color: white;
-      font-size: 20px;
+      background: var(--blue);
+      border-radius: 12px;
+    }
+
+    .nav-link {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .hero {
+      padding: 94px 0 82px;
+      background:
+        radial-gradient(circle at 85% 15%, #e8edff 0, transparent 33%),
+        linear-gradient(180deg, #fbfcff, #ffffff);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      align-items: center;
+      gap: 65px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: var(--blue);
+      background: #edf0ff;
+      padding: 7px 12px;
+      border-radius: 30px;
+      font-size: 12px;
       font-weight: 800;
-    }
-
-    .brand-name {
-      font-size: 18px;
-      font-weight: 750;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-subtitle {
-      margin-top: 3px;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .demo-label {
-      padding: 7px 11px;
-      border-radius: 20px;
-      background: var(--blue-light);
-      color: #4059d5;
-      font-size: 12px;
-      font-weight: 650;
-    }
-
-    .avatar {
-      display: grid;
-      place-items: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #e8eaff;
-      color: #4755bf;
-      font-weight: 750;
-      font-size: 13px;
-    }
-
-    .workspace {
-      width: 100%;
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 28px;
-      display: grid;
-      grid-template-columns: 285px minmax(0, 1fr);
-      gap: 24px;
-      flex: 1;
-    }
-
-    .sidebar, .main-panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      min-width: 0;
-    }
-
-    .sidebar {
-      align-self: start;
-      overflow: hidden;
-    }
-
-    .sidebar-heading {
-      padding: 22px 20px 15px;
-      font-size: 13px;
-      font-weight: 750;
-      color: #8b93a5;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .search-wrap {
-      padding: 0 15px 16px;
-    }
-
-    .search {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid var(--border);
-      background: #fafbfe;
-      border-radius: 9px;
-      outline: none;
-      font-size: 13px;
-    }
-
-    .search:focus, textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(71, 104, 245, 0.1);
-    }
-
-    .email-list {
-      border-top: 1px solid var(--border);
-    }
-
-    .email-item {
-      display: block;
-      width: 100%;
-      text-align: left;
-      background: white;
-      padding: 17px 17px 16px;
-      border: 0;
-      border-bottom: 1px solid var(--border);
-      border-left: 3px solid transparent;
-      transition: background 0.15s;
-    }
-
-    .email-item:hover {
-      background: #f8f9ff;
-    }
-
-    .email-item.active {
-      background: #f0f3ff;
-      border-left-color: var(--blue);
-    }
-
-    .email-item-top {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: space-between;
-    }
-
-    .email-sender {
-      font-size: 13px;
-      font-weight: 750;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .email-time {
-      font-size: 10px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .email-subject {
-      margin-top: 9px;
-      font-size: 12px;
-      font-weight: 650;
-      line-height: 1.4;
-    }
-
-    .email-preview {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      margin-top: 6px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 10px;
-      border-radius: 20px;
-      padding: 5px 8px;
-      font-size: 10px;
-      font-weight: 750;
-    }
-
-    .status.pending {
-      background: #f0f2f7;
-      color: #707a8d;
-    }
-
-    .status.agree {
-      color: var(--green);
-      background: var(--green-light);
-    }
-
-    .status.disagree {
-      color: var(--red);
-      background: var(--red-light);
-    }
-
-    .status.more {
-      color: var(--orange);
-      background: var(--orange-light);
-    }
-
-    .sidebar-footer {
-      padding: 15px 18px;
-      font-size: 11px;
-      line-height: 1.6;
-      color: var(--muted);
-    }
-
-    .main-panel {
-      overflow: hidden;
-    }
-
-    .page-heading {
-      padding: 24px 27px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
+      letter-spacing: 0.6px;
     }
 
     h1 {
-      margin: 0;
-      font-size: 23px;
-      letter-spacing: -0.8px;
+      margin: 22px 0 18px;
+      font-size: clamp(37px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -2.7px;
     }
 
-    .page-description {
-      font-size: 13px;
-      line-height: 1.6;
+    .hero-description {
       color: var(--muted);
-      margin-top: 7px;
+      font-size: 17px;
+      max-width: 540px;
+      line-height: 1.8;
     }
 
-    .message-area {
-      padding: 26px 27px;
+    .primary-link {
+      display: inline-block;
+      margin-top: 24px;
+      background: var(--blue);
+      color: white;
+      padding: 13px 21px;
+      border-radius: 10px;
+      font-weight: 750;
+      font-size: 14px;
+      box-shadow: 0 7px 18px #4968f52b;
     }
 
-    .message-meta {
+    .primary-link:hover {
+      background: #3553de;
+    }
+
+    .hero-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 15px;
+    }
+
+    .demo-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      overflow: hidden;
+      box-shadow: 0 25px 70px #27365b15;
+    }
+
+    .demo-top {
       display: flex;
-      gap: 13px;
       align-items: center;
-      padding-bottom: 22px;
+      gap: 10px;
+      padding: 17px 20px;
       border-bottom: 1px solid var(--border);
     }
 
-    .sender-avatar {
-      width: 44px;
-      height: 44px;
-      background: #e9edf9;
-      color: #4f5c90;
-      border-radius: 50%;
+    .demo-logo {
+      width: 35px;
+      height: 35px;
+      border-radius: 10px;
       display: grid;
       place-items: center;
+      background: #edf0ff;
+      color: var(--blue);
+      font-weight: 900;
+    }
+
+    .demo-top small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .demo-content {
+      padding: 23px;
+    }
+
+    .tag {
+      font-size: 10px;
       font-weight: 800;
-      flex-shrink: 0;
-    }
-
-    .sender-name {
-      font-size: 14px;
-      font-weight: 750;
-    }
-
-    .sender-address {
-      margin-top: 4px;
+      letter-spacing: 0.8px;
       color: var(--muted);
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .message-date {
-      margin-left: auto;
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .subject-label {
-      margin-top: 22px;
-      color: var(--muted);
-      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 750;
     }
 
-    .message-subject {
-      font-size: 18px;
-      font-weight: 750;
-      line-height: 1.4;
-      margin-top: 7px;
-    }
-
-    .message-body {
-      font-size: 14px;
-      line-height: 1.85;
-      white-space: pre-line;
-      overflow-wrap: anywhere;
-      margin-top: 20px;
-      color: #3f4a60;
-    }
-
-    .decision-section {
-      margin-top: 30px;
-      padding: 22px;
-      background: #f8f9fd;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .section-title {
-      font-size: 15px;
+    .email-subject {
       font-weight: 800;
+      margin: 5px 0 18px;
+      font-size: 17px;
     }
 
-    .section-description {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-      margin-top: 6px;
-    }
-
-    .decision-buttons {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 19px;
-    }
-
-    .decision-button {
-      min-height: 105px;
-      padding: 14px 10px;
+    .email-box {
+      background: #f7f8fc;
+      border: 1px solid var(--border);
       border-radius: 11px;
+      padding: 16px;
+      color: #49546a;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .decision-title {
+      font-size: 13px;
+      font-weight: 800;
+      margin: 22px 0 11px;
+    }
+
+    .decision {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px;
       border: 1px solid var(--border);
       background: white;
-      color: var(--text);
+      border-radius: 10px;
       text-align: left;
-      transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+      margin-top: 8px;
+      color: var(--dark);
+      transition: 0.15s;
     }
 
-    .decision-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 7px 16px rgba(30, 42, 75, 0.07);
-    }
-
-    .decision-button.agree:hover,
-    .decision-button.agree.selected {
-      border-color: #43ad82;
-      background: #f0fbf5;
-    }
-
-    .decision-button.disagree:hover,
-    .decision-button.disagree.selected {
-      border-color: #e17d7d;
-      background: #fff5f5;
-    }
-
-    .decision-button.more:hover,
-    .decision-button.more.selected {
-      border-color: #e4b65f;
-      background: #fffbf2;
+    .decision:hover,
+    .decision.selected {
+      border-color: var(--blue);
+      background: #f3f5ff;
     }
 
     .decision-icon {
-      display: block;
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-
-    .decision-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .decision-help {
-      display: block;
-      font-size: 10px;
-      line-height: 1.5;
-      margin-top: 5px;
-      color: var(--muted);
-    }
-
-    .reply-preview {
-      display: none;
-      margin-top: 18px;
-      padding: 19px;
-      border: 1px solid #dfe5f7;
-      background: #ffffff;
-      border-radius: 12px;
-    }
-
-    .reply-preview.visible {
-      display: block;
-    }
-
-    .reply-title {
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .reply-note {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 5px;
-      line-height: 1.5;
-    }
-
-    textarea {
-      display: block;
-      resize: vertical;
-      width: 100%;
-      min-height: 115px;
-      padding: 13px;
-      border: 1px solid var(--border);
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
       border-radius: 9px;
-      margin-top: 15px;
-      outline: none;
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1.7;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 17px;
     }
 
-    .reply-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      margin-top: 13px;
-    }
-
-    .primary-button, .secondary-button {
-      border-radius: 9px;
-      padding: 11px 15px;
-      font-weight: 750;
-      font-size: 12px;
-      border: 1px solid transparent;
-    }
-
-    .primary-button {
-      background: var(--blue);
-      color: white;
-    }
-
-    .primary-button:hover {
-      background: #3452dd;
-    }
-
-    .secondary-button {
-      background: white;
-      border-color: var(--border);
-      color: var(--text);
-    }
-
-    .secondary-button:hover {
-      background: #f7f8fc;
-    }
-
-    .notice {
-      display: none;
-      margin-top: 14px;
-      padding: 12px 14px;
-      background: var(--green-light);
+    .agree .decision-icon {
+      background: #e6f7ef;
       color: var(--green);
-      border-radius: 9px;
-      font-size: 12px;
-      line-height: 1.6;
     }
 
-    .notice.visible {
+    .disagree .decision-icon {
+      background: #fff0f0;
+      color: var(--red);
+    }
+
+    .more .decision-icon {
+      background: #fff5e4;
+      color: var(--orange);
+    }
+
+    .decision strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .decision small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .reply {
+      display: none;
+      margin-top: 17px;
+      padding: 15px;
+      border: 1px solid #dce4ff;
+      border-radius: 11px;
+      background: #f9faff;
+    }
+
+    .reply.visible {
       display: block;
     }
 
-    .privacy-note {
-      padding: 0 27px 25px;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
+    .reply strong {
+      font-size: 13px;
     }
 
-    .empty-search {
-      padding: 22px 16px;
+    .reply p {
+      color: #49546a;
       font-size: 12px;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    .demo-disclaimer {
+      font-size: 10px;
       color: var(--muted);
-      display: none;
+      margin-top: 12px;
     }
 
-    @media (max-width: 850px) {
-      .workspace {
-        grid-template-columns: 1fr;
-        padding: 16px;
-      }
-
-      .email-list {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .email-item {
-        border-right: 1px solid var(--border);
-      }
-
-      .sidebar-heading {
-        padding-top: 17px;
-      }
-
-      .sidebar-footer {
-        display: none;
-      }
+    section {
+      padding: 76px 0;
     }
 
-    @media (max-width: 600px) {
-      .topbar {
-        padding: 0 15px;
-        height: 64px;
-      }
-
-      .brand {
-        min-width: 0;
-      }
-
-      .brand-name {
-        font-size: 16px;
-      }
-
-      .demo-label {
-        display: none;
-      }
-
-      .workspace {
-        padding: 10px;
-        gap: 12px;
-      }
-
-      .email-list {
-        grid-template-columns: 1fr;
-      }
-
-      .email-item {
-        padding: 12px 15px;
-      }
-
-      .page-heading, .message-area {
-        padding: 20px 16px;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
-
-      .decision-section {
-        padding: 14px;
-      }
-
-      .decision-buttons {
-        grid-template-columns: 1fr;
-      }
-
-      .decision-button {
-        min-height: auto;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-align: left;
-      }
-
-      .decision-icon {
-        margin: 0;
-        width: 32px;
-        flex-shrink: 0;
-      }
-
-      .decision-help {
-        margin-top: 4px;
-      }
-
-      .message-date {
-        display: none;
-      }
-
-      .privacy-note {
-        padding: 0 16px 20px;
-      }
+    .section-heading {
+      max-width: 680px;
+      margin: 0 auto 38px;
+      text-align: center;
     }
-  </style>
-</head>
 
-<body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-icon">C</div>
-        <div>
-          <div class="brand-name">ClearReply AI</div>
-          <div class="brand-subtitle">One-click organization responses</div>
-        </div>
-      </div>
+    .section-heading h2 {
+      font-size: clamp(27px, 4vw, 38px);
+      line-height: 1.2;
+      letter-spacing: -1.2px;
+      margin: 0 0 13px;
+    }
 
-      <div class="topbar-right">
-        <span class="demo-label">INTERACTIVE DEMO</span>
-        <div class="avatar" title="Organization">OR</div>
-      </div>
-    </header>
+    .section-heading p {
+      color: var(--muted);
+      font-size: 15px;
+    }
 
-    <main class="workspace">
-      <aside class="sidebar">
-        <div class="sidebar-heading">Incoming emails</div>
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 21px;
+    }
 
-        <div class="search-wrap">
-          <input
-            id="search"
-            class="search"
-            type="search"
-            placeholder="Search emails..."
-            aria-label="Search emails"
-          >
-        </div>
+    .step {
+      padding: 25px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: white;
+    }
 
-        <div class="email-list" id="emailList"></div>
-        <div class="empty-search" id="emptySearch">No emails match your search.</div>
-
-        <div class="sidebar-footer">
-          Sample messages are provided for demonstration. No real email account is connected.
-        </div>
-      </aside>
-
-      <section class="main-panel">
-        <div class="page-heading">
-          <div>
-            <h1>Organization inbox</h1>
-            <div class="page-description">
-              Review an incoming message and choose a response without writing an
+    .step-number {
+      width: 40px;
+      height: 40
