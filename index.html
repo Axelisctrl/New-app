@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ChatCooler is designed to help long AI conversations stay responsive by reducing the number of message elements rendered at once while keeping conversation history accessible.">
+<title>ChatCooler — Keep Your Conversations Flowing</title>
+
+<style>
+:root {
+  --bg: #101114;
+  --sidebar: #17181d;
+  --panel: #1c1e24;
+  --panel2: #24262d;
+  --border: #333640;
+  --text: #f3f4f6;
+  --muted: #a4a7b0;
+  --accent: #8ab4ff;
+  --accent-bg: #233958;
+  --green: #6ee7a0;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+button, textarea { font: inherit; }
+
+button { cursor: pointer; }
+
+button:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+a { color: var(--accent); }
+
+.layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+}
+
+.sidebar {
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  padding: 22px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 9px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 21px;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -.5px;
+}
+
+.brand-sub {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: -4px;
+}
+
+.nav {
+  display: grid;
+  gap: 5px;
+}
+
+.nav-link {
+  text-align: left;
+  border: 1px solid transparent;
+  color: #d6d7dd;
+  background: transparent;
+  padding: 11px 12px;
+  border-radius: 10px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--panel2);
+  color: white;
+}
+
+.nav-link.active { border-color: var(--border); }
+
+.sidebar-label {
+  color: #858995;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+  padding: 0 10px;
+}
+
+.sidebar-note {
+  margin-top: auto;
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sidebar-note strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.main {
+  min-width: 0;
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 0 26px;
+  position: sticky;
+  top: 0;
+  background: rgba(16,17,20,.94);
+  backdrop-filter: blur(12px);
+  z-index: 5;
+}
+
+.topbar-title {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.demo-label {
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.home-wrap {
+  max-width: 1060px;
+  padding: 75px 32px 70px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  border: 1px solid #344863;
+  background: #19283c;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.hero h1 {
+  font-size: clamp(38px, 5.5vw, 65px);
+  line-height: 1.06;
+  letter-spacing: -2.8px;
+  max-width: 790px;
+  margin: 25px 0 20px;
+}
+
+.hero h1 span { color: var(--accent); }
+
+.hero p {
+  color: #b5b7c0;
+  font-size: 17px;
+  max-width: 670px;
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 15px;
+  background: var(--panel2);
+  color: var(--text);
+  font-weight: 650;
+}
+
+.btn:hover { filter: brightness(1.12); }
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #101722;
+}
+
+.btn-small {
+  padding: 8px 11px;
+  font-size: 12px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 62px;
+}
+
+.feature {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.feature-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  font-size: 18px;
+}
+
+.feature h3 {
+  font-size: 15px;
+  margin: 17px 0 7px;
+}
+
+.feature p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.75;
+}
+
+.section-title {
+  font-size: 26px;
+  letter-spacing: -.7px;
+  margin: 58px 0 12px;
+}
+
+.section-copy {
+  max-width: 740px;
+  color: var(--muted);
+}
+
+.notice {
+  border: 1px solid #564b31;
+  border-radius: 11px;
+  background: #272319;
+  color: #ded0a9;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.notice strong { color: #fff0bd; }
+
+.demo-wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 25px 24px 30px;
+}
+
+.demo-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.demo-heading h1 {
+  font-size: 25px;
+  letter-spacing: -.6px;
+  margin: 0 0 4px;
+}
+
+.demo-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-pill {
+  border: 1px solid #285a42;
+  background: #172d23;
+  color: var(--green);
+  border-radius: 999px;
+  font-size: 11px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 13px;
+  padding: 15px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.control-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+}
+
+.cooler-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #20232a;
+  border: 1px solid var(--border);
+  padding: 9px 12px;
+  border-radius: 10px;
+}
+
+.cooler-switch strong { font-size: 13px; }
+
+.switch {
+  border: 0;
+  width: 43px;
+  height: 24px;
+  border-radius: 20px;
+  background: #555966;
+  padding: 3px;
+  transition: background .15s ease;
+}
+
+.switch::after {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  transition: transform .15s ease;
+}
+
+.switch[aria-checked="true"] { background: #4c8de8; }
+.switch[aria-checked="true"]::after { transform: translateX(19px); }
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.metric {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 15px;
+}
+
+.metric-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.metric-value {
+  display: block;
+  margin-top: 4px;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: -.5px;
+}
+
+.metric-detail {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.chat-frame {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #141519;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 17px;
+  border-bottom: 1px solid var(--border);
+  background: #191a1f;
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #263e34;
+  color: #8ce0b0;
+  font-weight: 800;
+}
+
+.chat-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.chat-subtitle {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.chat-scroll {
+  height: min(48vh, 440px);
+  min-height: 290px;
+  overflow: auto;
+  padding: 12px 14px;
+  overscroll-behavior: contain;
+  scrollbar-color: #454852 transparent;
+}
+
+.message-list {
+  max-width: 790px;
+  margin: 0 auto;
+}
+
+.message {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 6px;
+  border-bottom: 1px solid rgba(255,255,255,.045);
+}
+
+.message:last-child { border-bottom: 0; }
+
+.message-avatar {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: #252831;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.message.assistant .message-avatar {
+  background: #233b30;
+  color: #9de7b9;
+}
+
+.message.user .message-avatar {
+  background: #27374e;
+  color: #b8d4ff;
+}
+
+.message-role {
+  display: block;
+  margin: 1px 0 5px;
+  font-size: 11px;
+  color: #b3b6c0;
+  font-weight: 750;
+}
+
+.message-text {
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  color: #e5e6eb;
+}
+
+.window-controls {
+  display: flex;
+  justify-content: center;
+  padding: 11px 5px;
+}
+
+.window-controls button {
+  border: 1px solid #354963;
+  border-radius: 999px;
+  background: #1d2a3a;
+  color: #b6d4ff;
+  font-size: 12px;
+  padding: 7px 13px;
+}
+
+.window-controls button:hover { background: #273c55; }
+
+.empty-state {
+  padding: 65px 15px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state h3 {
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.composer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 13px;
+  border-top: 1px solid var(--border);
+  background: #191a1f;
+}
+
+.composer textarea {
+  display: block;
+  resize: vertical;
+  min-height: 44px;
+  max-height: 140px;
+  flex: 1;
+  min-width: 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #24262d;
+  color: white;
+  padding: 12px;
+  outline: none;
+  font-size: 13px;
+}
+
+.composer textarea:focus { border-color: #4c77aa; }
+
+.send-btn {
+  height: 43px;
+  min-width: 70px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #101722;
+  font-weight: 800;
+}
+
+.composer-note {
+  color: #777b86;
+  text-align: center;
+  padding: 0 10px 12px;
+  font-size: 10px;
+}
+
+.explanation {
+  margin-top: 15px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.explanation strong { color: var(--text); }
+
+.privacy-wrap {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 50px 26px 80px;
+}
+
+.privacy-wrap h1 {
+  font-size: 38px;
+  letter-spacing: -1px;
+}
+
+.privacy-wrap h2 {
+  font-size: 20px;
+  margin-top: 32px;
+}
+
+.privacy-wrap p,
+.privacy-wrap li {
+  color: #c1c3cb;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.privacy-wrap li { margin-bottom: 7px; }
+
+.policy-date {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  color: #858995;
+  font-size: 11px;
+}
+
+.footer button {
+  color: var(--muted);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+}
+
+@media (max-width: 850px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar {
+    padding: 12px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .sidebar-note, .sidebar-label { display: none; }
+  .nav { display: flex; flex-wrap: wrap; }
+  .nav-link { padding: 8px 10px; font-size: 12px; }
+  .topbar { padding: 0 17px; }
+  .home-wrap { padding: 48px 20px; }
+  .feature-grid { grid-template-columns: 1fr; margin-top: 40px; }
+  .feature { padding: 17px; }
+  .demo-wrap { padding: 20px 13px; }
+  .metrics { gap: 7px; }
+  .metric { padding: 10px; }
+  .metric-value { font-size: 17px; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { letter-spacing: -1.5px; }
+  .demo-heading { flex-direction: column; }
+  .control-panel { align-items: stretch; }
+  .control-left { align-items: stretch; flex-direction: column; }
+  .control-left .btn { width: 100%; }
+  .metrics { grid-template-columns: 1fr; }
+  .metric-value { display: inline; margin-left: 8px; }
+  .footer { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div>
+        <div class="brand-name">ChatCooler</div>
+        <div class="brand-sub">Keep your conversations flowing</div>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Main navigation">
+      <button class="nav-link active" data-page="home">⌂ &nbsp; Overview</button>
+      <button class="nav-link" data-page="demo">▤ &nbsp; Interactive demo</button>
+      <button class="nav-link" data-page="privacy">◇ &nbsp; Privacy policy</button>
+    </nav>
+
+    <div class="sidebar-note">
+      <strong>Built for long conversations</strong>
+      ChatCooler explores a simple idea: keep the history while reducing how much of it the page renders at once.
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title" id="topbarTitle">ChatCooler overview</div>
+      <div class="demo-label">Independent concept prototype</div>
+    </header>
+
+    <!-- HOME PAGE -->
+    <section class="page active" id="page-home">
+      <div class="home-wrap">
+        <div class="hero">
+          <div class="eyebrow">A browser performance concept</div>
+          <h1>Keep your history.<br><span>Keep your momentum.</span></h1>
+          <p>
+            ChatCooler is designed to help long conversations remain responsive
+            by reducing how many message elements the page renders at once,
+            while keeping older messages accessible.
+          </p>
+          <div class="actions">
+            <button class="btn btn-primary" id="startDemoBtn">Try the 300-message demo ↗</button>
+            <button class="btn" data-page="privacy">Read privacy policy</button>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature">
+            <div class="feature-icon">▤</div>
+            <h3>Keep older messages</h3>
+            <p>
+              The concept preserves the full sample history and lets you move
+              through it in smaller windows instead of permanently deleting
+              older messages.
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-icon">↗</div>
+            <h3>Render less at once</h3>
+            <p>
+              Compare displaying all 300 message blocks with displaying a
+              smaller window. Fewer rendered elements may reduce some browser
+              rendering work.
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-icon">⌁</div>
+            <h3>Designed for long sessions</h3>
+            <p>
+              The idea is to help people keep learning and writing on older
+              laptops without abandoning long conversations just because the
+              page becomes slow.
+            </p>
+          </article>
+        </div>
+
+        <h2 class="section-title">See the idea in action</h2>
+        <p class="section-copy">
+          Load a long sample conversation, switch ChatCooler on and off, and
+          navigate between older and newer parts of the history. The counters
+          show how many message elements this demo currently renders.
+        </p>
+        <div class="actions">
+          <button class="btn btn-primary" id="secondDemoBtn">Open interactive demo</button>
+        </div>
+
+        <div class="notice" style="margin-top:36px">
+          <strong>Prototype disclosure:</strong> This is a standalone demonstration
+          of a rendering approach. It is not the real ChatGPT service, is not
+          connected to a live AI model, and does not prove a measured speed
+          improvement on real devices or other websites.
+        </div>
+      </div>
+    </section>
+
+    <!-- DEMO PAGE -->
+    <section class="page" id="page-demo">
+      <div class="demo-wrap">
+        <div class="demo-heading">
+          <div>
+            <h1>ChatCooler demo</h1>
+            <p>Explore the effect of rendering a smaller window of a long conversation.</p>
+          </div>
+          <div class="status-pill">● Local interactive demo</div>
+        </div>
+
+        <div class="control-panel">
+          <div class="control-left">
+            <div class="cooler-switch">
+              <strong id="toggleLabel">ChatCooler: ON</strong>
+              <button class="switch" id="coolerToggle" role="switch"
+                aria-label="Toggle ChatCooler rendering optimization"
+                aria-checked="true"></button>
+            </div>
+            <button class="btn btn-small btn-primary" id="loadSampleBtn">
+              Load 300-message conversation
+            </button>
+            <button class="btn btn-small" id="newChatBtn">New conversation</button>
+          </div>
+          <div class="demo-label">Full history stays in this page session</div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <span class="metric-label">Messages in history</span>
+            <span class="metric-value" id="totalCount">0</span>
+            <span class="metric-detail">Sample + messages you type</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Elements currently rendered</span>
+            <span class="metric-value" id="renderedCount">0</span>
+            <span class="metric-detail" id="renderedDetail">No messages loaded</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Rendering mode</span>
+            <span class="metric-value" id="modeCount">ON</span>
+            <span class="metric-detail" id="modeDetail">Small message window</span>
+          </div>
+        </div>
+
+        <div class="chat-frame">
+          <div class="chat-header">
+            <div class="chat-avatar">C</div>
+            <div>
+              <div class="chat-title">Conversation</div>
+              <div class="chat-subtitle" id="conversationSubtitle">Ready for a sample conversation</div>
+            </div>
+          </div>
+
+          <div class="chat-scroll" id="chatScroll">
+            <div class="empty-state" id="emptyState">
+              <h3>Start a long conversation</h3>
+              <p>Load the 300-message sample to compare the two rendering modes.</p>
+              <button class="btn btn-primary" id="emptyLoadBtn">Load 300 messages</button>
+            </div>
+            <div class="window-controls" id="olderControl" style="display:none"></div>
+            <div class="message-list" id="messageList"></div>
+            <div class="window-controls" id="newerControl" style="display:none"></div>
+          </div>
+
+          <form class="composer" id="composer">
+            <textarea id="messageInput" rows="1"
+              placeholder="Write a message for this local demo..."
+              aria-label="Write a message"></textarea>
+            <button class="send-btn" type="submit">Send ↑</button>
+          </form>
+          <div class="composer-note">
+            Demo replies are simulated locally. No live AI service is connected.
+          </div>
+        </div>
+
+        <div class="explanation">
+          <strong>What this demonstrates:</strong>
+          With ChatCooler OFF, the page creates a DOM element for every message.
+          With ChatCooler ON, it displays a window of up to 22 messages at a
+          time; the remaining messages stay in the page's JavaScript history
+          and can be shown using the earlier/later controls.
+          <br><br>
+          <strong>What this doesn't prove:</strong>
+          This prototype does not measure CPU usage, memory use, typing delay,
+          or scrolling performance on a real low-powered laptop. It also does
+          not modify the real ChatGPT, Google Docs, or other websites.
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIVACY POLICY PAGE -->
+    <section class="page" id="page-privacy">
+      <div class="privacy-wrap">
+        <div class="eyebrow">Transparency and privacy</div>
+        <h1>Privacy Policy</h1>
+        <div class="policy-date">Effective date: October 24, 2026</div>
+
+        <p>
+          This policy explains how the ChatCooler demonstration website handles
+          information. ChatCooler is a prototype exploring ways to reduce the
+          number of message elements rendered at one time in a long conversation.
+        </p>
+
+        <h2>1. Information handled by this demo</h2>
+        <p>
+          The sample conversation is generated in your browser. Messages you
+          type into this demonstration and the generated sample history are
+          held in the page's JavaScript memory for the current session. This
+          demo does not send your message text to a ChatCooler server or to an
+          AI provider.
+        </p>
+
+        <h2>2. Storage and cookies</h2>
+        <p>
+          This single-page demo does not intentionally set cookies, use
+          analytics scripts, or save chat messages to a ChatCooler account.
+          The conversation in this demo is not designed to persist after the
+          page is refreshed or closed.
+        </p>
+
+        <h2>3. Third-party services</h2>
+        <p>
+          This page does not intentionally load third-party analytics or
+          advertising scripts. If the page is hosted using GitHub Pages, GitHub
+          may process technical information such as server logs as part of
+          operating its hosting service. Refer to
+          <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement"
+             target="_blank" rel="noopener noreferrer">GitHub's Privacy Statement</a>
+          for information about GitHub's handling of data.
+        </p>
+
+        <h2>4. The separate browser extension</h2>
+        <p>
+          This page is a demonstration website, not the ChatCooler browser
+          extension. The extension's actual data practices depend on its code,
+          permissions, and configuration. Before this policy is used as the
+          official policy for a distributed extension, the developer must
+          verify that the extension behaves consistently with this policy.
+        </p>
+        <p>
+          If a future version stores preferences, sends data to a server,
+          integrates with an organization, or uses any external service, this
+          policy must be updated to clearly describe that behavior before release.
+        </p>
+
+        <h2>5. Purpose of processing</h2>
+        <p>
+          The purpose of this demonstration is to show a rendering approach:
+          keeping message history available while rendering a smaller number
+          of message elements at a time. Sample content is provided only to
+          demonstrate that interface.
+        </p>
+
+        <h2>6. Children's privacy</h2>
+        <p>
+          This prototype is not specifically directed to children and does not
+          ask visitors to submit personal information.
+        </p>
+
+        <h2>7. Policy changes</h2>
+        <p>
+          This policy may be revised when the website or product changes. The
+          effective date at the top should be updated when a material revision
+          is made.
+        </p>
+
+        <h2>8. Contact</h2>
+        <p>
+          For privacy questions, contact the ChatCooler developer using the
+          contact information provided on the official ChatCooler product page.
+          Add a valid contact email here before publishing this policy for
+          official distribution.
+        </p>
+
+        <div class="notice" style="margin-top:25px">
+          <strong>Before Chrome Web Store submission:</strong> This policy
+          currently describes the demonstration website and its intended
+          privacy model. Verify the separate extension's actual behavior,
+          add a valid contact method, and revise the policy if the extension
+          collects, stores, or transmits any data.
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>ChatCooler · Independent concept prototype</span>
+      <div>
+        <button data-page="home">Home</button>
+        <button data-page="demo">Demo</button>
+        <button data-page="privacy">Privacy policy</button>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+/*
+  CHATCOOLER SINGLE-FILE DEMO
+
+  This is a local demonstration of rendering a smaller message window.
+  It does not connect to a live AI model and does not modify other websites.
+*/
+
+const WINDOW_SIZE = 22;
+
+let chatCoolerOn = true;
+let messages = [];
+let windowStart = 0;
+let sampleLoaded = false;
+
+const $ = (id) => document.getElementById(id);
+
+const topics = [
+  "critical thinking",
+  "learning mathematics",
+  "scientific reasoning",
+  "philosophy",
+  "clear writing",
+  "AI literacy",
+  "problem-solving",
+  "creative thinking",
+  "time management",
+  "asking better questions",
+  "understanding evidence",
+  "learning difficult concepts",
+  "decision-making",
+  "cross-disciplinary learning",
+  "information overload"
+];
+
+const questionTemplates = [
+  "Explain {topic} in simple terms.",
+  "Give me a practical example of {topic}.",
+  "How can I use {topic} to solve everyday problems?",
+  "What common mistake should I avoid when learning {topic}?",
+  "Give me a short exercise to practise {topic}.",
+  "How does {topic} connect to other fields?",
+  "Summarize the most important lesson about {topic}.",
+  "How would I explain {topic} to a beginner?",
+  "What questions should I ask to understand {topic} better?",
+  "How can I tell whether I truly understand {topic}?"
+];
+
+const answerTemplates = [
+  "Start with the core idea, then explain why it matters. Break it into smaller parts, test each part with an example, and check whether your explanation still makes sense when the example changes.",
+  "A useful approach is to define the problem, list what you know, identify what you still need to find out, and test one possible solution at a time. This keeps your reasoning organized.",
+  "Try connecting the idea to something familiar. A concrete example makes an abstract concept easier to understand. Then change one detail and see whether your explanation still works.",
+  "One common mistake is memorizing a conclusion without understanding the reasoning behind it. Ask what evidence supports the conclusion and what alternative explanations might exist.",
+  "A practical exercise is to explain the concept in three sentences, invent an example, and identify one limitation. If you can do all three clearly, you are moving beyond memorization.",
+  "This idea can connect to other fields because many disciplines share methods such as making observations, testing assumptions, comparing explanations, and revising conclusions when evidence changes.",
+  "Focus on the reasoning process rather than speed alone. A strong explanation identifies the main claim, gives supporting evidence, and explains how that evidence supports the claim.",
+  "To teach this to a beginner, use everyday language first. Introduce technical terms only after the basic idea is clear, and check understanding with a new example.",
+  "Ask what the claim means, what evidence supports it, what assumptions it relies on, and what observation might prove it wrong. These questions help uncover gaps in understanding.",
+  "Test your understanding by explaining the idea without looking at notes, applying it to a different situation, and identifying where the method might fail. Recognizing limitations is part of learning."
+];
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+}
+
+function makeSampleConversation() {
+  const result = [];
+
+  for (let pair = 0; pair < 150; pair++) {
+    const topic = topics[pair % topics.length];
+    const templateIndex = Math.floor(pair / topics.length) % questionTemplates.length;
+    const question = questionTemplates[templateIndex].replace("{topic}", topic);
+    const answer = answerTemplates[templateIndex];
+
+    result.push({
+      role: "user",
+      text: question,
+      id: "sample-u-" + pair
+    });
+
+    result.push({
+      role: "assistant",
+      text: answer,
+      id: "sample-a-" + pair
+    });
+  }
+
+  return result;
+}
+
+function setPage(page) {
+  const allowed = ["home", "demo", "privacy"];
+  if (!allowed.includes(page)) page = "home";
+
+  document.querySelectorAll(".page").forEach((element) => {
+    element.classList.toggle("active", element.id === "page-" + page);
+  });
+
+  document.querySelectorAll(".nav-link").forEach((element) => {
+    const isActive = element.dataset.page === page;
+    element.classList.toggle("active", isActive);
+    if (isActive) element.setAttribute("aria-current", "page");
+    else element.removeAttribute("aria-current");
+  });
+
+  const titles = {
+    home: "ChatCooler overview",
+    demo: "ChatCooler interactive demo",
+    privacy: "ChatCooler privacy policy"
+  };
+
+  $("topbarTitle").textContent = titles[page];
+  document.title = titles[page] + " — ChatCooler";
+
+  if (window.location.hash !== "#" + page) {
+    history.replaceState(null, "", "#" + page);
+  }
+
+  if (page === "demo") {
+    renderMessages();
+  }
+
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+document.querySelectorAll("[data-page]").forEach((button) => {
+  button.addEventListener("click", () => setPage(button.dataset.page));
+});
+
+function loadSampleConversation() {
+  messages = makeSampleConversation();
+  sampleLoaded = true;
+  windowStart = Math.max(0, messages.length - WINDOW_SIZE);
+  setPage("demo");
+  renderMessages();
+  scrollChatToBottom();
+}
+
+$("startDemoBtn").addEventListener("click", loadSampleConversation);
+$("secondDemoBtn").addEventListener("click", loadSampleConversation);
+$("loadSampleBtn").addEventListener("click", loadSampleConversation);
+$("emptyLoadBtn").addEventListener("click", loadSampleConversation);
+
+$("newChatBtn").addEventListener("click", () => {
+  messages = [];
+  sampleLoaded = false;
+  windowStart = 0;
+  renderMessages();
+  $("messageInput").focus();
+});
+
+$("coolerToggle").addEventListener("click", () => {
+  chatCoolerOn = !chatCoolerOn;
+
+  if (chatCoolerOn) {
+    windowStart = Math.max(0, messages.length - WINDOW_SIZE);
+  } else {
+    windowStart = 0;
+  }
+
+  renderMessages();
+  if (!chatCoolerOn) scrollChatToBottom();
+});
+
+function scrollChatToBottom() {
+  const scroller = $("chatScroll");
+  scroller.scrollTop = scroller.scrollHeight;
+}
+
+function renderMessages() {
+  const total = messages.length;
+  let start = 0;
+  let end = total;
+
+  if (chatCoolerOn && total > WINDOW_SIZE) {
+    const maximumStart = Math.max(0, total - WINDOW_SIZE);
+    windowStart = Math.min(Math.max(0, windowStart), maximumStart);
+    start = windowStart;
+    end = Math.min(start + WINDOW_SIZE, total);
+  }
+
+  const visibleMessages = messages.slice(start, end);
+
+  $("totalCount").textContent = total.toLocaleString();
+  $("renderedCount").textContent = visibleMessages.length.toLocaleString();
+  $("modeCount").textContent = chatCoolerOn ? "ON" : "OFF";
+  $("modeDetail").textContent = chatCoolerOn
+    ? "Windowed rendering"
+    : "All messages rendered";
+  $("renderedDetail").textContent = total === 0
+    ? "No messages loaded"
+    : "Showing " + (start + 1).toLocaleString() + "–" +
+      end.toLocaleString() + " of " + total.toLocaleString();
+
+  $("toggleLabel").textContent = "ChatCooler: " + (chatCoolerOn ? "ON" : "OFF");
+  $("coolerToggle").setAttribute("aria-checked", String(chatCoolerOn));
+
+  $("conversationSubtitle").textContent = total === 0
+    ? "Ready for a sample conversation"
+    : total.toLocaleString() + " messages in this conversation";
+
+  $("emptyState").style.display = total === 0 ? "block" : "none";
+  $("messageList").style.display = total === 0 ? "none" : "block";
+
+  if (total === 0) {
+    $("messageList").innerHTML = "";
+    $("olderControl").style.display = "none";
+    $("newerControl").style.display = "none";
+    return;
+  }
+
+  $("messageList").innerHTML = visibleMessages.map((message) => {
+    const isUser = message.role === "user";
+    const role = isUser ? "You" : "Assistant";
+    const avatar = isUser ? "Y" : "C";
+
+    return `
+      <article class="message ${isUser ? "user" : "assistant"}">
+        <div class="message-avatar">${avatar}</div>
+        <div>
+          <span class="message-role">${role}</span>
+          <div class="message-text">${escapeHTML(message.text)}</div>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  const older = $("olderControl");
+  const newer = $("newerControl");
+
+  if (chatCoolerOn && start > 0) {
+    older.style.display = "flex";
+    older.innerHTML = "";
+    const olderButton = document.createElement("button");
+    olderButton.type = "button";
+    olderButton.textContent = "↑ Show earlier messages";
+    olderButton.addEventListener("click", () => {
+      windowStart = Math.max(0, start - WINDOW_SIZE);
+      renderMessages();
+      $("chatScroll").scrollTop = 0;
+    });
+    older.appendChild(olderButton);
+  } else {
+    older.style.display = "none";
+    older.innerHTML = "";
+  }
+
+  if (chatCoolerOn && end < total) {
+    newer.style.display = "flex";
+    newer.innerHTML = "";
+    const newerButton = document.createElement("button");
+    newerButton.type = "button";
+    newerButton.textContent = "Show later messages ↓";
+    newerButton.addEventListener("click", () => {
+      windowStart = Math.min(total - WINDOW_SIZE, start + WINDOW_SIZE);
+      renderMessages();
+      $("chatScroll").scrollTop = 0;
+    });
+    newer.appendChild(newerButton);
+  } else {
+    newer.style.display = "none";
+    newer.innerHTML = "";
+  }
+}
+
+function makeLocalDemoReply(userText) {
+  const shortText = userText.length > 180
+    ? userText.slice(0, 177) + "..."
+    : userText;
+
+  return "This is a simulated reply to your message: “" + shortText + "”\n\n" +
+    "In a real AI chat, the assistant would generate a tailored response. " +
+    "This prototype is focused on demonstrating how a long conversation can " +
+    "be displayed in smaller windows while keeping the message history available. " +
+    "No live AI service is connected.";
+}
+
+$("composer").addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const input = $("messageInput");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  messages.push({
+    role: "user",
+    text,
+    id: "user-" + Date.now()
+  });
+
+  input.value = "";
+  windowStart = Math.max(0, messages.length - WINDOW_SIZE);
+  renderMessages();
+  scrollChatToBottom();
+
+  const sendButton = $("composer").querySelector("button[type='submit']");
+  sendButton.disabled = true;
+  sendButton.textContent = "...";
+
+  window.setTimeout(() => {
+    messages.push({
+      role: "assistant",
+      text: makeLocalDemoReply(text),
+      id: "assistant-" + Date.now()
+    });
+
+    windowStart = Math.max(0, messages.length - WINDOW_SIZE);
+    renderMessages();
+    scrollChatToBottom();
+    sendButton.disabled = false;
+    sendButton.textContent = "Send ↑";
+  }, 350);
+});
+
+$("messageInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    $("composer").requestSubmit();
+  }
+});
+
+/* Open a selected section when a visitor uses a #home, #demo, or #privacy URL. */
+const initialPage = window.location.hash.replace("#", "");
+setPage(["home", "demo", "privacy"].includes(initialPage) ? initialPage : "home");
+</script>
+</body>
+</html>
